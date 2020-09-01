@@ -1,7 +1,9 @@
-var d = new Date()
+calculateTimeLeft();
 
+setInterval(calculateTimeLeft, 1000);
 
 function calculateTimeLeft(){
+    var d = new Date()
     var currentHour = d.getHours()
     var currentMinute = d.getMinutes()
     var currentSecond = d.getSeconds()
@@ -18,7 +20,5 @@ function calculateTimeLeft(){
     
     finalValue = valueHour + valueMinute + valueSecond;
     element = (finalValue + " Seconds");
-    document.write(element);
+    document.getElementById("p1").innerHTML = element;
 }
-
-calculateTimeLeft();
