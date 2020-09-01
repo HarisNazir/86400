@@ -18,5 +18,6 @@ function calculateTimeLeft(){
     
     finalValue = valueHour + valueMinute + valueSecond + 1;
     element = (finalValue + " Seconds");
+
     document.getElementById("p1").innerHTML = element;
 }
