@@ -1,14 +1,15 @@
 import React, {useEffect, useState} from 'react'
 import './App.css';
 
-const App = () => {
+// setTimeLeft(calculateTimeLeft) == 10
+// useState(10)
+// timeLeft == 10
 
-  const [timeLeft, setTimeLeft] = useState(0)
+const App = () => {
+  const [timeLeft, setTimeLeft] = useState(0);
+  
   useEffect(() => {
-    const interval = setInterval(() =>{
-      setTimeLeft(calculateTimeLeft);
-    }, 1000);
-    return() => clearInterval(interval);
+    setInterval(() => {setTimeLeft(calculateTimeLeft);}, 1000);
   }, []);
 
   return (
