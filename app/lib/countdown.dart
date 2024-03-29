@@ -1,8 +1,9 @@
-// Remove the void main() => runApp(CountdownApp()); line
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
 
-// CountdownApp remains unchanged, no need to have a standalone runApp here.
+void main() => runApp(CountdownApp());
+
 class CountdownApp extends StatefulWidget {
   @override
   _CountdownAppState createState() => _CountdownAppState();
@@ -10,7 +11,7 @@ class CountdownApp extends StatefulWidget {
 
 class _CountdownAppState extends State<CountdownApp> {
   late Timer _timer;
-  late int _remainingSeconds;
+  int _remainingSeconds = 86400; // Start with 86,400 seconds
 
   @override
   void initState() {
@@ -21,18 +22,20 @@ class _CountdownAppState extends State<CountdownApp> {
 
   void _resetCountdown() {
     final now = DateTime.now();
-    final endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
-    _remainingSeconds = endOfDay.difference(now).inSeconds;
+    final midnight = DateTime(now.year, now.month, now.day + 1);
+    _remainingSeconds = midnight.difference(now).inSeconds;
+    setState(() {}); // Update immediately to ensure the display is correct
   }
 
   void _startTimer() {
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(Duration(seconds: 1), (Timer timer) {
       if (_remainingSeconds > 0) {
         setState(() {
           _remainingSeconds--;
         });
       } else {
-        _resetCountdown();
+        _timer.cancel();
+        _resetCountdown(); // Reset for the next day
       }
     });
   }
@@ -43,20 +46,56 @@ class _CountdownAppState extends State<CountdownApp> {
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+@override
+Widget build(BuildContext context) {
+    String secondsStr = _remainingSeconds.toString();
+
+    return MaterialApp(
+      home: Scaffold(
         backgroundColor: Colors.black,
         body: Center(
-          child: Text(
-            '$_remainingSeconds',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 48,
-              fontWeight: FontWeight.bold,
-            ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                '\$',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 48,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              // Generate Widgets for each digit with their position
+              ...secondsStr.split('').asMap().entries.map((entry) {
+                int idx = entry.key;
+                String val = entry.value;
+                return _animatedDigit(val, idx);
+              }).toList(),
+            ],
           ),
         ),
+      ),
     );
-  }
+}
+
+
+
+  Widget _animatedDigit(String digit, int position) {
+  return AnimatedSwitcher(
+    duration: const Duration(milliseconds: 150),
+    transitionBuilder: (Widget child, Animation<double> animation) {
+      return FadeTransition(opacity: animation, child: child);
+    },
+    // The key now includes both the digit and its position
+    child: Text(
+      digit,
+      key: ValueKey<String>('$digit$position'),
+      style: TextStyle(
+        color: Colors.white,
+        fontSize: 48,
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+  );
+}
 }
